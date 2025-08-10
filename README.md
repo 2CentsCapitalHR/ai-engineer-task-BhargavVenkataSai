@@ -5,11 +5,8 @@ This project is an AI-powered legal assistant for reviewing and validating docum
 
 ### 1. Dashboard
 ![Dashboard](1.jpg)
-
-### 2. Document Review
 ![Document Review](2.jpg)
 
-### 3. Compliance Report
 ![Compliance Report](3.jpg)
 
 ## Setup
