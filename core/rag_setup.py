@@ -3,13 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings 
 from langchain_community.vectorstores import FAISS
-import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 ADGM_DATA_SOURCES = {
     "Resolution_Incorporate_LTD.docx": "https://assets.adgm.com/download/assets/adgm-ra-resolution-multiple-incorporate-shareholders-LTD-incorporation-v2.docx/186a12846c3911efa4e6c6223862cd87",
@@ -47,7 +45,9 @@ def download_and_prepare_sources():
 def create_rag_pipeline():
     if os.path.exists(VECTOR_STORE_PATH):
         print("Loading existing vector store...")
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+        embeddings = OpenAIEmbeddings()
+
         return FAISS.load_local(VECTOR_STORE_PATH, embeddings, allow_dangerous_deserialization=True).as_retriever()
     
     print("Building new vector store...")
@@ -82,7 +82,9 @@ def create_rag_pipeline():
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     docs = text_splitter.split_documents(all_docs)
     
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+    embeddings = OpenAIEmbeddings()
+
     vector_store = FAISS.from_documents(docs, embeddings)
     vector_store.save_local(VECTOR_STORE_PATH)
     print("Vector store created and saved.")

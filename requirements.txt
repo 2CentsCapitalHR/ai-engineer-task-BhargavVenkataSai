@@ -1,15 +1,17 @@
-# Core Frameworks
-gradio
-langchain
-langchain-google-genai
-langchain-community
-google-generativeai  # <-- ADD THIS LINE
-docx2txt
-# RAG & Data Handling
-faiss-cpu
+
+# OpenAI's LangChain integration
+langchain-openai
+
+# Other dependencies
+streamlit
 python-docx
-pypdf
-beautifulsoup4
+docx2txt
+gradio
+cloudinary
 requests
+beautifulsoup4
+langchain-community
+langchain
+pypdf
+faiss-cpu
 python-dotenv
-cloudinary 

@@ -3,7 +3,7 @@ import json
 import requests
 import tempfile
 from docx import Document
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI # Changed from Google to OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from core.docx_handler import add_comment, save_document
@@ -27,8 +27,10 @@ DOC_TYPE_KEYWORDS = {
 class ADGMCorporateAgent:
     def __init__(self, retriever):
         self.retriever = retriever
-        # Using a more stable model name and keeping the model you updated to
-        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0.2, convert_system_message_to_human=True)
+        # --- MAJOR CHANGE HERE ---
+        # Swapped ChatGoogleGenerativeAI with ChatOpenAI and specified a GPT model
+        self.llm = ChatOpenAI(model_name="gpt-4o", temperature=0.2)
+        # --- END OF MAJOR CHANGE ---
         self.prompt_template = self._create_prompt_template()
         self.llm_chain = LLMChain(prompt=self.prompt_template, llm=self.llm)
 
@@ -78,6 +80,9 @@ class ADGMCorporateAgent:
         return {"process": "Unknown", "missing_documents": []}
 
     def _analyze_single_document_from_url(self, docx_url, original_filename):
+        # We need the time module to add a delay for free-tier APIs
+        import time
+
         temp_path = None
         try:
             response = requests.get(docx_url, timeout=30)
@@ -90,35 +95,31 @@ class ADGMCorporateAgent:
             doc = Document(temp_path)
             issues_found = []
 
-            # --- BATCHING LOGIC ---
             paragraphs = [p for p in doc.paragraphs if len(p.text.strip()) > 20]
-            batch_size = 2 # Process 2 paragraphs at a time
+            
+
+            batch_size = 2 
 
             for i in range(0, len(paragraphs), batch_size):
                 batch = paragraphs[i:i+batch_size]
                 
-                # Format the batch for the prompt
                 clauses_for_prompt = []
                 for j, para in enumerate(batch):
                     clauses_for_prompt.append(f"Clause {i+j+1}:\n\"\"\"\n{para.text}\n\"\"\"")
                 
                 clauses_batch_str = "\n\n".join(clauses_for_prompt)
                 
-                # Get context based on the whole batch
                 context_docs = self.retriever.get_relevant_documents(clauses_batch_str)
                 context = "\n".join([d.page_content for d in context_docs])
                 
-                # Make ONE API call for the entire batch
                 response = self.llm_chain.invoke({"context": context, "clauses_batch": clauses_batch_str})
                 
                 try:
-                    # The response should be a JSON array of issues
                     results = json.loads(response['text'])
                     if not isinstance(results, list):
                         continue
 
                     for result in results:
-                        # Find the original paragraph to comment on
                         clause_num = result.get('clause_number')
                         if clause_num and 1 <= clause_num <= len(paragraphs):
                             para_to_comment = paragraphs[clause_num - 1]
@@ -134,11 +135,11 @@ class ADGMCorporateAgent:
                                 "suggestion": result.get('suggestion')
                             }
                             issues_found.append(issue_details)
-
                 except (json.JSONDecodeError, KeyError, IndexError, TypeError):
-                    # Ignore errors if the LLM returns a malformed response
                     pass
-                time.sleep(30)
+
+                time.sleep(70) 
+
             return doc, issues_found
         finally:
             if temp_path and os.path.exists(temp_path):
