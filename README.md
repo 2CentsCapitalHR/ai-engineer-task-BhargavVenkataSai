@@ -1,9 +1,9 @@
 # ADGM-Compliant Corporate Agent
 
 This project is an AI-powered legal assistant for reviewing and validating documentation for business incorporation and compliance within the Abu Dhabi Global Market (ADGM).
-![Dashboard Screenshot](assets/screenshots/dashboard.png)
-![Dashboard Screenshot](assets/screenshots/dashboard.png)
-![Dashboard Screenshot](assets/screenshots/dashboard.png)
+![Dashboard Screenshot](1.png)
+![Dashboard Screenshot](2.png)
+![Dashboard Screenshot](3.png)
 ## Setup
 
 1.  **Clone the Repository:**
