@@ -1,0 +1,15 @@
+# Core Frameworks
+gradio
+langchain
+langchain-google-genai
+langchain-community
+google-generativeai  # <-- ADD THIS LINE
+docx2txt
+# RAG & Data Handling
+faiss-cpu
+python-docx
+pypdf
+beautifulsoup4
+requests
+python-dotenv
+cloudinary 

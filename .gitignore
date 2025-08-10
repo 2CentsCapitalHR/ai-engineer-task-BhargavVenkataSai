@@ -1,0 +1,21 @@
+# Environment variables - VERY IMPORTANT
+.env
+
+# Python virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Large data and index files
+faiss_index/
+data/
+
+# Temporary outputs from Gradio runs
+outputs/
+uploads/
+/sample_documents/
+
+# IDE settings
+.vscode/
